@@ -27,14 +27,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY ./cognee-mcp/pyproject.toml ./cognee-mcp/uv.lock ./cognee-mcp/entrypoint.sh ./
 
 # Install the project's dependencies using the lockfile and settings
-RUN --mount=type=cache,id=cognee-mcp-uv,target=/root/.cache/uv \
-    uv sync --frozen --no-install-project --no-dev --no-editable
+# Cache mounts removed: Railway's builder rejects arbitrary cache ids.
+RUN uv sync --frozen --no-install-project --no-dev --no-editable
 
 # Then, add the rest of the project source code and install it
 # Installing separately from its dependencies allows layer caching
 COPY ./cognee-mcp /app
-RUN --mount=type=cache,id=cognee-mcp-uv,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-editable
+RUN uv sync --frozen --no-dev --no-editable
 
 FROM python:3.12-slim-bookworm
 
