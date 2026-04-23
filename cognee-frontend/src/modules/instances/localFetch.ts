@@ -17,6 +17,10 @@ export default async function localFetch(url: URL | RequestInfo, options: Reques
   if (!urlStr.startsWith("/v1/") && !urlStr.startsWith("/v1?")) {
     urlStr = "/v1" + urlStr;
   }
+  // Railway's edge CDN 308-redirects trailing-slash requests to the no-slash
+  // variant, and the redirect response lacks CORS headers — which the browser
+  // treats as a network error on credentialed fetches. Strip the slash up front.
+  urlStr = urlStr.replace(/\/(\?|$)/, "$1");
   const fullUrl = localApiUrl + "/api" + urlStr;
   const method = options.method || "GET";
 
