@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const BACKEND = process.env.NEXT_PUBLIC_LOCAL_API_URL || "http://localhost:8000";
+const BACKEND = process.env.BACKEND_ORIGIN || "http://localhost:8000";
 
 const nextConfig = {
   typescript: { ignoreBuildErrors: true },
