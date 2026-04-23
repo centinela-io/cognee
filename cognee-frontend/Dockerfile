@@ -1,22 +1,23 @@
-# Use an official Node.js runtime as a parent image
 FROM node:22-alpine
 
-# Set the working directory to /app
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
 COPY package.json package-lock.json ./
 
-# Install any needed packages specified in package.json
-RUN npm ci
-RUN npm rebuild lightningcss
+# Use --no-audit to speed up; lockfile is out of sync upstream so use install, not ci
+RUN npm install --no-audit --no-fund && npm rebuild lightningcss
 
-# Copy the rest of the application code to the working directory
 COPY src ./src
 COPY public ./public
 COPY next.config.mjs .
 COPY postcss.config.mjs .
 COPY tsconfig.json .
 
-# Build the app and run it
-CMD ["npm", "run", "dev"]
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+
+RUN npm run build
+
+EXPOSE 3000
+CMD ["npm", "run", "start"]
